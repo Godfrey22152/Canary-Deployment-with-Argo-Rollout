@@ -133,7 +133,7 @@ jobs:
           name: Code_Coverage-Report
           path: coverage.xml
 
-      - name: Upload Reports to Nexus Repository
+      - name: Upload Reports to Nexus Artifact Repository
         run: |
           curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} -T trivy-fs-report.json \
                "http://192.168.95.58:8081/repository/test-reports/Trivy-fs-report/trivy-fs-report.json"
