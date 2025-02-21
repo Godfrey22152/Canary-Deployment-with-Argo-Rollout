@@ -1,0 +1,79 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: rollout-success-analysis
+  namespace: argo-rollouts
+spec:
+  args:
+  - name: service-name
+
+  # 1. Success Rate (Primary Canary Metric)
+  metrics:
+    - name: success-rate
+      interval: 30s
+      successCondition: "result[0] >= 0.95"
+      failureCondition: "result[0] < 0.90"   # Rollback if success rate < 90%
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://192.168.56.100 #http://prometheus-server.monitoring.svc.cluster.local
+          query: |
+            sum(rate(flask_http_request_duration_seconds_count{http_status=~"2..", job="{{args.service-name}}"}[2m]))
+            / sum(rate(flask_http_request_duration_seconds_count{http_status=~"2..", job="{{args.service-name}}"}[2m]))
+
+    # 2. Check-error-rate
+    - name: low-error-rate
+      interval: 30s
+      successCondition: "result > 0.8"  # Ensures the error rate is below 20%
+      failureCondition: "result <= 0.8"  # Flags failure if error rate is 20% or higher
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://192.168.56.100 #http://prometheus-server.monitoring.svc.cluster.local
+          query: |
+            scalar(
+              sum(rate(
+                flask_http_request_total{http_status!~"5.*", job=~"{{args.service-name}}"}[2m]
+              )) /
+              sum(rate(
+                flask_http_request_total{job=~"{{args.service-name}}"}[2m]
+              ))
+            )
+
+    # 3. Health Check Pass Rate
+    - name: health-check-pass-rate
+      interval: 30s
+      successCondition: "result[0] >= 0.9"
+      failureCondition: "result[0] < 0.8"  # Rollback if health check pass rate is below 80%
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://192.168.56.100
+          query: |
+            sum(flask_health_status{job="{{args.service-name}}"})
+            / count(flask_health_check_total{job="{{args.service-name}}"})
+
+    # 4. Readiness Check Pass Rate
+    - name: readiness-check-pass-rate
+      interval: 30s
+      successCondition: "result[0] >= 0.9"
+      failureCondition: "result[0] < 0.8"
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://192.168.56.100
+          query: |
+            sum(flask_ready_status{job="{{args.service-name}}"})
+            / count(flask_ready_check_total{job="{{args.service-name}}"})
+
+    # 5. Rolling Deployment Stability Score (Aggregate Health & Readiness)
+    - name: stability-score
+      interval: 30s
+      successCondition: "result[0] >= 0.9"
+      failureCondition: "result[0] < 0.85"  # Rollback if stability score drops too low
+      failureLimit: 3
+      provider:
+        prometheus:
+          address: http://192.168.56.100
+          query: |
+            (avg(flask_health_status{job="{{args.service-name}}"}) + avg(flask_ready_status{job="{{args.service-name}}"})) / 2

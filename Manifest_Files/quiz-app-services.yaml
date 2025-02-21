@@ -1,0 +1,36 @@
+# Canary Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: canary-service
+  namespace: argo-rollouts
+  labels:
+    app: rollouts-traffic-management
+spec:
+  selector:
+    app: rollouts-traffic-management
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+
+---
+# Stable Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: stable-service
+  namespace: argo-rollouts
+  labels:
+    app: rollouts-traffic-management
+spec:
+  selector:
+    app: rollouts-traffic-management
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP

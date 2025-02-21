@@ -1,0 +1,93 @@
+# Application Rollout
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rollouts-traffic-management
+  namespace: argo-rollouts
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      dynamicStableScale: true
+      canaryService: canary-service
+      stableService: stable-service
+      trafficRouting:
+        nginx:
+          stableIngress: rollouts-traffic-management
+      analysis:
+        templates:
+        - templateName: rollout-success-analysis
+        startingStep: 2 # delay starting analysis run until setWeight: 40%
+        args:
+        - name: service-name
+          value: "canary-service-metrics"
+      steps:
+      - setWeight: 20             # Send 20% traffic to the canary version
+      - pause: {duration: 30s}    # Pause for monitoring
+      - setWeight: 40             # Increase traffic to 40%
+      - pause: {duration: 30s}
+      - setWeight: 60             # Increase traffic to 60%
+      - pause: {duration: 30s}
+      - setWeight: 80             # Increase traffic to 80%
+      - pause: {duration: 30s}
+  selector:
+    matchLabels:
+      app: rollouts-traffic-management
+  template:
+    metadata:
+      labels:
+        app: rollouts-traffic-management
+    spec:
+      containers:
+      - name: quiz-app
+        image: godfrey22152/quiz-game-app:canary
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 5000
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongo-url
+        - name: PROM_USER
+          valueFrom:
+            secretKeyRef:
+              name: prometheus-auth
+              key: PROM_USER
+        - name: PROM_PASS
+          valueFrom:
+            secretKeyRef:
+              name: prometheus-auth
+              key: PROM_PASS
+        startupProbe:
+          httpGet:
+            path: /ready
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+
+---
