@@ -118,7 +118,7 @@ jobs:
       - name: Unit Testing and Coverage with Pytest
         run: |
           export PYTHONPATH=$(pwd)
-          pytest --cov=app tests/ --junitxml=pytest_report.xml --cov-report=xml:coverage.xml
+          pytest --cov=app Tests/ --junitxml=pytest_report.xml --cov-report=xml:coverage.xml
 
       # 11. Upload Test Results and Code Coverage
       - name: Upload Test Results
