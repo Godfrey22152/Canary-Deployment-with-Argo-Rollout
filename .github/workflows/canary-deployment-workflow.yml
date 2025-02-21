@@ -93,7 +93,7 @@ jobs:
       # 6. Trivy FS Scan
       - name: Trivy FS Scan
         run: |
-          trivy fs --format json -o trivy-fs-report.json --scanners vuln,misconfig --severity HIGH,CRITICAL .
+          trivy fs --format json -o trivy-fs-report.json --security-checks vuln,config --severity HIGH,CRITICAL .
 
       # 7. Upload Trivy Report
       - name: Upload Trivy FS Report
