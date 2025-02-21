@@ -1,6 +1,7 @@
 import os
 import tempfile
 import pytest
+import json
 from flask import Flask
 from pymongo import MongoClient
 from app import app
@@ -21,8 +22,9 @@ def client():
 def test_healthz(client):
     rv = client.get('/healthz')
     assert rv.status_code == 200
-    assert rv.data == b'OK'
-
+    data = json.loads(rv.data)
+    assert data["status"] == "HEALTHY"
+    
 def test_ready(client):
     rv = client.get('/ready')
     assert rv.status_code == 200 or rv.status_code == 500
