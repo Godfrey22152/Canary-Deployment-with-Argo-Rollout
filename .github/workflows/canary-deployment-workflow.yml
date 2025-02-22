@@ -24,7 +24,7 @@ jobs:
           python-version: "3.10"
           cache: "pip"
 
-      # 3. Install Dependencies and Tools
+      # 3. Install Dependencies and Tools.
       - name: Install Dependencies and Tools
         run: |
           sudo apt-get update
