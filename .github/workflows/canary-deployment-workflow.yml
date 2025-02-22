@@ -120,7 +120,7 @@ jobs:
           export PYTHONPATH=$(pwd)
           pytest --cov=app Tests/ --junitxml=pytest_report.xml --cov-report=xml:coverage.xml
 
-      # 11. Upload Test Results and Code Coverage
+      # 11. Upload Test Results and Code Coverage.
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
