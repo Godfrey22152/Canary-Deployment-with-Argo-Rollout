@@ -132,10 +132,22 @@ jobs:
         with:
           name: Code_Coverage-Report
           path: coverage.xml
-
+          
+      # 12. Securely store security scan results in Nexus Repository. 
       - name: Upload Reports to Nexus Artifact Repository
         run: |
+          # Upload Trivy File System Scan report to Nexus Repository
           curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} -T trivy-fs-report.json \
                "http://192.168.95.58:8081/repository/test-reports/Trivy-fs-report/trivy-fs-report.json"
+               
+          # Upload Bandit security scan results to Nexus Repository
+          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file bandit_report.json \
+               "http://192.168.95.58:8081/repository/test-reports/Bandit-Scan-Report/bandit_report.json"
 
+          # Upload Pytest Report to Nexus
+          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file pytest_report.xml \
+               "http://192.168.95.58:8081/repository/test-reports/Pytest_Unit_Test-Report/pytest_report.xml"
 
+          # Upload Coverage Report to Nexus Repository
+          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file coverage.xml \
+               "http://192.168.95.58:8081/repository/test-reports/Code_Coverage-Report/coverage.xml"
