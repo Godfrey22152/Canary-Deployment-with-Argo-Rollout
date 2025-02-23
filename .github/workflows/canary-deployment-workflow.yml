@@ -166,7 +166,7 @@ jobs:
       # 13. Set up Docker Build Variable
       - name: Set Up Docker Build Variables
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)  # Generate timestamp-based tag
+          TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")  # Generate timestamp-based tag
           echo "IMAGE_NAME=godfrey22152/quiz-game-app" >> $GITHUB_ENV
           echo "TAG=${{ github.event.inputs.release_type }}-${TIMESTAMP}" >> $GITHUB_ENV
 
