@@ -3,6 +3,17 @@ name: Canary-Deployment-CICD-pipeline
 on:
   push:
     branches: [ "main" ]
+  # prompt for a manual selection of Image tag.
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Select release type (stable or canary)"
+        required: true
+        default: "stable"
+        type: choice
+        options:
+          - stable
+          - canary
 
 jobs:
   build:
@@ -151,3 +162,21 @@ jobs:
           # Upload Coverage Report to Nexus Repository
           curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file coverage.xml \
                "http://192.168.76.58:8081/repository/test-reports/Code_Coverage-Report/coverage.xml"
+
+      # 13. Set up Docker Build Variable
+      - name: Set Up Docker Build Variables
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)  # Generate timestamp-based tag
+          echo "IMAGE_NAME=godfrey22152/quiz-game-app" >> $GITHUB_ENV
+          echo "TAG=${{ github.event.inputs.release_type }}-${TIMESTAMP}" >> $GITHUB_ENV
+
+      # 14. Build Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build -t $IMAGE_NAME:$TAG .
+
+      # 15. Push Docker Image to DockerHub.
+      - name: Docker Build and Push
+        run: |
+          echo ${{ secrets.DOCKER_HUB_PAT }} | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
+          docker push $IMAGE_NAME:$TAG
