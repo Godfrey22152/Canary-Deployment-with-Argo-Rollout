@@ -21,7 +21,8 @@ def client():
 def test_healthz(client):
     rv = client.get('/healthz')
     assert rv.status_code == 200
-    assert rv.data == b'OK'
+    data = json.loads(rv.data)
+    assert data["status"] == "HEALTHY"
 
 def test_ready(client):
     rv = client.get('/ready')
