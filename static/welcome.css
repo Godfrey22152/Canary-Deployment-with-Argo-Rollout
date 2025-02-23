@@ -5,8 +5,7 @@ body {
 }
 
 .hero {
-   /* background: linear-gradient(to bottom, #006a4e, #004225); stable*/  
-    background: linear-gradient(to bottom, #311432, #36013f); 
+    background: linear-gradient(to bottom, #006a4e, #004225);  /* Stable */    
     color: #fff;
     text-align: center;
     padding: 100px 0;
