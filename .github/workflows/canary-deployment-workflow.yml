@@ -146,7 +146,51 @@ jobs:
           name: Code_Coverage-Report
           path: coverage.xml
           
-      # 12. Securely store security scan results in Nexus Repository. 
+      # 12. Set up Docker Build Variable
+      - name: Set Up Docker Build Variables
+        run: |
+          TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")  # Generate timestamp-based tag
+          echo "IMAGE_NAME=godfrey22152/quiz-game-app" >> $GITHUB_ENV
+          echo "TAG=${{ github.event.inputs.release_type }}-${TIMESTAMP}" >> $GITHUB_ENV
+
+      # 13. Build Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build -t $IMAGE_NAME:$TAG .
+
+      # 14. Push Docker Image to DockerHub.
+      - name: Docker Build and Push
+        run: |
+          echo ${{ secrets.DOCKER_HUB_PAT }} | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
+          docker push $IMAGE_NAME:$TAG
+
+      # 15. Docker Image Scan with Docker Scout
+      - name: Docker Image Scan with Docker Scout
+        run: |
+          # Check if Docker Scout CLI is installed
+          if ! command docker scout version &> /dev/null; then
+            echo "Docker Scout CLI not found. Installing..."
+            curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+          else
+            echo "Docker Scout CLI is already installed."
+          fi
+          
+          mkdir -p Docker-Scout-Reports
+
+          # Run Docker Scout quickview command
+          docker scout quickview $IMAGE_NAME:$TAG > Docker-Scout-Reports/quickview_scan_report.sarif.json
+
+          # Run Docker Scout CVEs command
+          docker scout cves $IMAGE_NAME:$TAG --format sarif --only-severity critical,high > Docker-Scout-Reports/cves_scan_report.sarif.json
+
+      # 16. Upload Docker Scout Reports
+      - name: Upload Docker Scout Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: Image-Scan-Reports
+          path: Docker-Scout-Reports/
+
+      # 17. Securely store security scan results in Nexus Repository. 
       - name: Upload Reports to Nexus Artifact Repository
         run: |
           # Upload Trivy File System Scan report to Nexus Repository
@@ -164,26 +208,12 @@ jobs:
           # Upload Coverage Report to Nexus Repository
           curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file coverage.xml \
                "http://192.168.223.58:8081/repository/test-reports/Code_Coverage-Report/coverage.xml"
-
-      # 13. Set up Docker Build Variable
-      - name: Set Up Docker Build Variables
-        run: |
-          TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")  # Generate timestamp-based tag
-          echo "IMAGE_NAME=godfrey22152/quiz-game-app" >> $GITHUB_ENV
-          echo "TAG=${{ github.event.inputs.release_type }}-${TIMESTAMP}" >> $GITHUB_ENV
-
-      # 14. Build Docker Image
-      - name: Build Docker Image
-        run: |
-          docker build -t $IMAGE_NAME:$TAG .
-
-      # 15. Push Docker Image to DockerHub.
-      - name: Docker Build and Push
-        run: |
-          echo ${{ secrets.DOCKER_HUB_PAT }} | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
-          docker push $IMAGE_NAME:$TAG
-
-      # 16. Fetch deployment manifests from main branch only if not already on main
+               
+          # Upload Docker Scout Image Scan Report to Nexus Repository 
+          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file Docker-Scout-Reports/quickview_scan_report.sarif.json \
+               "http://192.168.223.58:8081/repository/test-reports/Docker-Scout-Reports/"
+      
+      # 18. Fetch deployment manifests from main branch only if not already on main
       - name: Ensure Deployment Manifests are Available
         run: |
           CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -195,7 +225,7 @@ jobs:
             echo "Already on main branch. No need to fetch Manifest_Files."
           fi
           
-      # 17. Update Image Tag in Manifest_Files/quiz-app-rollout.yaml
+      # 19. Update Image Tag in Manifest_Files/quiz-app-rollout.yaml
       - name: Update Image Tag in quiz-app-rollout.yaml
         run: |
           echo "Updating image tag in rollout manifest..."
