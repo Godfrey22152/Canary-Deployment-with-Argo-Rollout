@@ -1,8 +1,8 @@
 name: Canary-Deployment-CICD-pipeline
 
 on:
-  push:
-    branches: [ "main" ]
+  #push:
+    #branches: [ "main" ]
   # prompt for a manual selection of Image tag.
   workflow_dispatch:
     inputs:
