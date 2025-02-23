@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
       - name: quiz-app
-        image: godfrey22152/quiz-game-app:canary
+        image: godfrey22152/quiz-game-app:stable
         imagePullPolicy: Always
         ports:
         - name: http
