@@ -178,46 +178,34 @@ jobs:
             echo "Docker Scout CLI is already installed."
           fi
           
-          mkdir -p Docker-Scout-Reports
+          mkdir -p test-reports/Docker-Scout-Reports
 
           # Run Docker Scout quickview command
-          docker scout quickview $IMAGE_NAME:$TAG > Docker-Scout-Reports/quickview_scan_report.sarif.json
+          docker scout quickview $IMAGE_NAME:$TAG > test-reports/Docker-Scout-Reports/quickview_scan_report.sarif.json
 
           # Run Docker Scout CVEs command
-          docker scout cves $IMAGE_NAME:$TAG --format sarif --only-severity critical,high > Docker-Scout-Reports/cves_scan_report.sarif.json
+          docker scout cves $IMAGE_NAME:$TAG --format sarif --only-severity critical,high > test-reports/Docker-Scout-Reports/cves_scan_report.sarif.json
 
       # 16. Upload Docker Scout Reports
       - name: Upload Docker Scout Reports
         uses: actions/upload-artifact@v4
         with:
           name: Image-Scan-Reports
-          path: Docker-Scout-Reports/
+          path: test-reports/Docker-Scout-Reports/
 
       # 17. Securely store security scan results in Nexus Repository. 
       - name: Upload Reports to Nexus Artifact Repository
         run: |
-          # Upload Trivy File System Scan report to Nexus Repository
-          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} -T test-reports/Trivy-fs-report/trivy-fs-report.json \
-               "http://192.168.223.58:8081/repository/test-reports/Trivy-fs-report/trivy-fs-report.json"
-               
-          # Upload Bandit security scan results to Nexus Repository
-          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file test-reports/Bandit-Scan-Report/bandit_report.json \
-               "http://192.168.223.58:8081/repository/test-reports/Bandit-Scan-Report/bandit_report.json"
+          find test-reports -type f | while read file; do
+            # Construct the Nexus upload URL by replacing "test-reports/" with the target path
+            target_path=$(echo "$file" | sed 's|test-reports/||')
 
-          # Upload Pytest Report to Nexus
-          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file test-reports/Pytest_Unit_Test-Report/pytest_report.xml \
-               "http://192.168.223.58:8081/repository/test-reports/Pytest_Unit_Test-Report/pytest_report.xml"
-
-          # Upload Coverage Report to Nexus Repository
-          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} --upload-file test-reports/Code_Coverage-Report/coverage.xml \
-               "http://192.168.223.58:8081/repository/test-reports/Code_Coverage-Report/coverage.xml"
-               
-          # Upload Docker Scout Image Scan Report to Nexus Repository 
-          for file in Docker-Scout-Reports/*; do
+            echo "Uploading $file to Nexus..."
+  
             curl -u "${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}" \
                  --upload-file "$file" \
-                 "http://192.168.223.58:8081/repository/test-reports/Docker-Scout-Reports/$(basename "$file")"
-          done
+                 "http://192.168.223.58:8081/repository/test-reports/$target_path"
+          done          
 
       # 18. Fetch deployment manifests from main branch only if not already on main
       - name: Ensure Deployment Manifests are Available
