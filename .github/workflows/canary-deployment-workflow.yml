@@ -201,7 +201,7 @@ jobs:
   
             curl -u "${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}" \
                  --upload-file "$file" \
-                 "http://192.168.223.58:8081/repository/test-reports/$target_path"
+                 "${{ secrets.NEXUS_URL }}/repository/test-reports/$target_path"
           done          
 
       # 18. Fetch deployment manifests from main branch only if not already on main
