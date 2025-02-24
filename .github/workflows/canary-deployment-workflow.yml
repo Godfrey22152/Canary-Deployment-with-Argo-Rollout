@@ -1,8 +1,6 @@
 name: Canary-Deployment-CICD-pipeline
 
 on:
-  #push:
-    #branches: [ "main" ]
   # prompt for a manual selection of Image tag.
   workflow_dispatch:
     inputs:
@@ -17,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted  # SetUp a self-hosted agent
+    runs-on: self-hosted  # Running on the self-hosted agent (Canary Runner)
     env:
       DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT }}
       DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
@@ -67,7 +65,6 @@ jobs:
           else
             echo "Trivy is already installed."
           fi
-
           
           # Install Python security scanner (Bandit) --> Check if Bandit is installed before installing
           if ! pip show bandit > /dev/null 2>&1; then
@@ -103,7 +100,7 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      # 6. Trivy FS Scan
+      # 6. Trivy File System Scan
       - name: Trivy FS Scan
         run: |
           mkdir -p test-reports/Trivy-fs-report
@@ -136,7 +133,7 @@ jobs:
           export PYTHONPATH=$(pwd)
           pytest --cov=app Tests/ --junitxml=test-reports/Pytest_Unit_Test-Report/pytest_report.xml --cov-report=xml:test-reports/Code_Coverage-Report/coverage.xml
 
-      # 11. Upload Test Results and Code Coverage.
+      # 11. Upload Pytest Results and Code Coverage.
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
