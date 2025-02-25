@@ -188,21 +188,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Image-Scan-Reports
-          path: test-reports/Docker-Scout-Reports/
+          path: test-reports/Docker-Scout-Reports/   
 
-      # 17. Securely store security scan results in Nexus Repository. 
+      # 17. Securely store security scan results in Nexus Repository.
       - name: Upload Reports to Nexus Artifact Repository
-        run: |
-          find test-reports -type f | while read file; do
-            # Construct the Nexus upload URL by replacing "test-reports/" with the target path
-            target_path=$(echo "$file" | sed 's|test-reports/||')
-
-            echo "Uploading $file to Nexus..."
-  
-            curl -u "${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}" \
-                 --upload-file "$file" \
-                 "${{ secrets.NEXUS_URL }}/repository/test-reports/$target_path"
-          done          
+        uses: cdqag/upload-to-nexus@v0.1.0
+        with:
+          instance-url: ${{ secrets.NEXUS_URL }}
+          username: ${{ secrets.NEXUS_USERNAME }}
+          password: ${{ secrets.NEXUS_PASSWORD }}
+          repository: test-reports
+          files: test-reports/**
+          if-local-file-does-not-exist: warn-and-ignore  # Or 'fail' based on your preference
 
       # 18. Fetch deployment manifests from main branch only if not already on main
       - name: Ensure Deployment Manifests are Available
@@ -234,6 +231,13 @@ jobs:
           base64-kube-config: ${{ secrets.KUBE_CONFIG }}
       - run: |
           kubectl apply -f Manifest_Files/
+          
+          echo "Waiting for stable version release rollout to be ready..."
+          sleep 60
+          kubectl get rollouts -n argo-rollouts
+          kubectl get pods -n argo-rollouts
+          kubectl get svc -n argo-rollouts
+          kubectl get ingress -n argo-rollouts
         
         
 
