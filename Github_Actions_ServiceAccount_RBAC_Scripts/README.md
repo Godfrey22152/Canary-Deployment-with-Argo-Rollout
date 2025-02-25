@@ -126,7 +126,7 @@ To create the Github Actions Service Account and associated RBAC resources, run 
 
    ```bash
    git clone https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout.git
-   cd Github_Actions_ServiceAccount_RBAC_Scripts
+   cd Canary-Deployment-with-Argo-Rollout/Github_Actions_ServiceAccount_RBAC_Scripts
    ```
 2. Make the `create_github_actions_rbac.sh` script executable:
    ```bash
