@@ -198,7 +198,12 @@ jobs:
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
           repository: test-reports
-          files: test-reports/**
+          files: |
+            test-reports/Bandit-Scan-Report/**
+            test-reports/Code_Coverage-Report/**
+            test-reports/Docker-Scout-Reports/**
+            test-reports/Pytest_Unit_Test-Report/**
+            test-reports/Trivy-fs-report/**
           default-destination: test-reports/
           if-local-file-does-not-exist: warn-and-ignore  # Or 'fail' based on your preference
 
