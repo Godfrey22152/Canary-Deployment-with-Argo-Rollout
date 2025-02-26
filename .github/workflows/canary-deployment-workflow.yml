@@ -199,6 +199,7 @@ jobs:
           password: ${{ secrets.NEXUS_PASSWORD }}
           repository: test-reports
           files: test-reports/**
+          default-destination: test-reports/
           if-local-file-does-not-exist: warn-and-ignore  # Or 'fail' based on your preference
 
       # 18. Fetch deployment manifests from main branch only if not already on main
