@@ -88,7 +88,7 @@ jobs:
       - name: Static Code Analysis with Bandit
         uses: mdegis/bandit-action@v1.1
         with:
-          path: "."  # Scan the entire repo (default)
+          path: "."  
           level: "LOW"  # Equivalent to '-ll' flag
           confidence: "LOW"  # Equivalent to '-ii' flag
           exit_zero: true  # Prevent failure if issues are found
