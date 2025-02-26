@@ -190,22 +190,19 @@ jobs:
           name: Image-Scan-Reports
           path: test-reports/Docker-Scout-Reports/   
 
-      # 17. Securely store security scan results in Nexus Repository.
+      # 17. Securely store security scan results in Nexus Repository. 
       - name: Upload Reports to Nexus Artifact Repository
-        uses: cdqag/upload-to-nexus@v1
-        with:
-          instance-url: ${{ secrets.NEXUS_URL }}
-          username: ${{ secrets.NEXUS_USERNAME }}
-          password: ${{ secrets.NEXUS_PASSWORD }}
-          repository: test-reports
-          files: |
-            test-reports/Bandit-Scan-Report/**
-            test-reports/Code_Coverage-Report/**
-            test-reports/Docker-Scout-Reports/**
-            test-reports/Pytest_Unit_Test-Report/**
-            test-reports/Trivy-fs-report/**
-          default-destination: test-reports/
-          if-local-file-does-not-exist: warn-and-ignore  # Or 'fail' based on your preference
+        run: |
+          find test-reports -type f | while read file; do
+            # Construct the Nexus upload URL by replacing "test-reports/" with the target path
+            target_path=$(echo "$file" | sed 's|test-reports/||')
+
+            echo "Uploading $file to Nexus..."
+  
+            curl -u "${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }}" \
+                 --upload-file "$file" \
+                 "${{ secrets.NEXUS_URL }}/repository/test-reports/$target_path"
+          done  
 
       # 18. Fetch deployment manifests from main branch only if not already on main
       - name: Ensure Deployment Manifests are Available
