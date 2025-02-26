@@ -61,50 +61,14 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      # Ensure the test-reports directory exists before running Trivy
-      - name: Ensure Trivy Reports Directory Exists
-        run: mkdir -p test-reports/Trivy-fs-report
-
-      # 5. Trivy File System Scan
-      - name: Trivy FS Scan
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          scan-type: "fs"  # File System scan
-          scan-ref: "."  # Scan the current directory
-          severity: "HIGH,CRITICAL"  # Only report HIGH and CRITICAL vulnerabilities
-          format: "json"  # Output format as JSON
-          output: "test-reports/Trivy-fs-report/trivy-fs-report.json"  # Save the report in the desired directory
-          scanners: "vuln,config"  # Include both vulnerability and misconfiguration scans
-          exit-code: "0"  # Ensure the job does not fail due to found vulnerabilities
-
-      # 6. Upload Trivy Report
-      - name: Upload Trivy FS Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Trivy-fs-report
-          path: test-reports/Trivy-fs-report/trivy-fs-report.json
-
-      # 7. Static Code Analysis with Bandit
-      - name: Static Code Analysis with Bandit
-        run: |
-          mkdir -p test-reports/Bandit-Scan-Report 
-          bandit -ll -ii -r . -f json -o test-reports/Bandit-Scan-Report/bandit_report.json || true
-
-      # 8. Upload Bandit Report
-      - name: Upload Bandit Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Bandit-Scan-Report
-          path: test-reports/Bandit-Scan-Report/bandit_report.json
-
-      # 9. Unit Testing and Coverage with Pytest
+      # 5. Unit Testing and Coverage with Pytest
       - name: Unit Testing and Coverage with Pytest
         run: |
           mkdir -p test-reports/Pytest_Unit_Test-Report; mkdir -p test-reports/Code_Coverage-Report
           export PYTHONPATH=$(pwd)
           pytest --cov=app Tests/ --junitxml=test-reports/Pytest_Unit_Test-Report/pytest_report.xml --cov-report=xml:test-reports/Code_Coverage-Report/coverage.xml
 
-      # 10. Upload Pytest Results and Code Coverage.
+      # 6. Upload Pytest Results and Code Coverage.
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         with:
@@ -116,6 +80,50 @@ jobs:
         with:
           name: Code_Coverage-Report
           path: test-reports/Code_Coverage-Report/coverage.xml
+      
+      # Ensure the test-reports directory exists before running Trivy
+      - name: Ensure Trivy Reports Directory Exists
+        run: mkdir -p test-reports/Trivy-fs-report
+
+      # 7. Trivy File System Scan
+      - name: Trivy FS Scan
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: "fs"  # File System scan
+          scan-ref: "."  # Scan the current directory
+          severity: "HIGH,CRITICAL"  # Only report HIGH and CRITICAL vulnerabilities
+          format: "json"  # Output format as JSON
+          output: "test-reports/Trivy-fs-report/trivy-fs-report.json"  # Save the report in the desired directory
+          scanners: "vuln,config"  # Include both vulnerability and misconfiguration scans
+          exit-code: "0"  # Ensure the job does not fail due to found vulnerabilities
+
+      # 8. Upload Trivy Report
+      - name: Upload Trivy FS Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trivy-fs-report
+          path: test-reports/Trivy-fs-report/trivy-fs-report.json
+
+      # 9. Static Code Analysis with Bandit
+      - name: Static Code Analysis with Bandit
+        run: |
+          # Install Python security scanner (Bandit) --> Check if Bandit is installed before installing
+          if ! pip show bandit > /dev/null 2>&1; then
+            echo "Installing Bandit..."
+            pip install bandit
+          else
+            echo "Bandit is already installed."
+          fi
+          mkdir -p test-reports/Bandit-Scan-Report 
+          
+          bandit -ll -ii -r . -f json -o test-reports/Bandit-Scan-Report/bandit_report.json || true
+
+      # 10. Upload Bandit Report
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bandit-Scan-Report
+          path: test-reports/Bandit-Scan-Report/bandit_report.json
 
       # 11. Set up Docker 
       - name: Docker Setup Docker
