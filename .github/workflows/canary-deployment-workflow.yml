@@ -86,19 +86,9 @@ jobs:
 
       # 7. Static Code Analysis with Bandit
       - name: Static Code Analysis with Bandit
-        uses: mdegis/bandit-action@v1.1
-        with:
-          path: "."  
-          level: "LOW"  # Equivalent to '-ll' flag
-          confidence: "LOW"  # Equivalent to '-ii' flag
-          exit_zero: true  # Prevent failure if issues are found
-        continue-on-error: true  # Ensures the workflow doesn't fail if vulnerabilities exist
-
-      # Move the report to the expected directory
-      - name: Store Bandit Report
         run: |
-          mkdir -p test-reports/Bandit-Scan-Report
-          mv bandit-report.json test-reports/Bandit-Scan-Report/bandit_report.json
+          mkdir -p test-reports/Bandit-Scan-Report 
+          bandit -ll -ii -r . -f json -o test-reports/Bandit-Scan-Report/bandit_report.json || true
 
       # 8. Upload Bandit Report
       - name: Upload Bandit Report
