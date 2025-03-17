@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: rollouts-metrics
+  namespace: argo-rollouts
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: rollouts-traffic-management
+  endpoints:
+    # Monitor the main metrics service
+    - port: metrics
+      path: /metrics
+      interval: 10s
+      basicAuth:
+        username:
+          name: prometheus-auth
+          key: PROM_USER
+        password:
+          name: prometheus-auth
+          key: PROM_PASS
+
+    # Monitor the Canary service
+    - port: http
+      path: /metrics
+      interval: 10s
+      targetPort: 5000
+      honorLabels: true
+      basicAuth:
+        username:
+          name: prometheus-auth
+          key: PROM_USER
+        password:
+          name: prometheus-auth
+          key: PROM_PASS
+
+  namespaceSelector:
+    matchNames:
+      - argo-rollouts
