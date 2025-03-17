@@ -21,7 +21,7 @@ spec:
         startingStep: 2 # delay starting analysis run until setWeight: 40%
         args:
         - name: service-name
-          value: "canary-service-metrics"
+          value: "canary-service"
       steps:
       - setWeight: 20             # Send 20% traffic to the canary version
       - pause: {duration: 30s}    # Pause for monitoring
@@ -76,7 +76,7 @@ spec:
             path: /healthz
             port: 5000
           initialDelaySeconds: 10
-          periodSeconds: 30
+          periodSeconds: 10
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
