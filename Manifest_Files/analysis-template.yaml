@@ -16,7 +16,7 @@ spec:
       failureLimit: 3
       provider:
         prometheus:
-          address: http://192.168.56.100 #http://prometheus-server.monitoring.svc.cluster.local
+          address: http://192.168.56.100:9090 #http://prometheus-server.monitoring.svc.cluster.local
           query: |
             sum(rate(flask_http_request_duration_seconds_count{http_status=~"2..", job="{{args.service-name}}"}[2m]))
             / sum(rate(flask_http_request_duration_seconds_count{http_status=~"2..", job="{{args.service-name}}"}[2m]))
@@ -24,20 +24,20 @@ spec:
     # 2. Check-error-rate
     - name: low-error-rate
       interval: 30s
-      successCondition: "result > 0.8"  # Ensures the error rate is below 20%
-      failureCondition: "result <= 0.8"  # Flags failure if error rate is 20% or higher
+      successCondition: "result[0] > 0.99"  # If 99% or more of requests are successful, the canary is promoted.
+      failureCondition: "result[0] < 0.95"  # If less than 95% of requests succeed, the canary is aborted.
       failureLimit: 3
       provider:
         prometheus:
-          address: http://192.168.56.100 #http://prometheus-server.monitoring.svc.cluster.local
+          address: http://192.168.56.100:9090 #http://prometheus-server.monitoring.svc.cluster.local
           query: |
-            scalar(
+            clamp_min(
               sum(rate(
                 flask_http_request_total{http_status!~"5.*", job=~"{{args.service-name}}"}[2m]
               )) /
-              sum(rate(
-                flask_http_request_total{job=~"{{args.service-name}}"}[2m]
-              ))
+              (sum(rate(
+                 flask_http_request_total{job=~"{{args.service-name}}"}[2m]
+              )) + 1e-10), 0
             )
 
     # 3. Health Check Pass Rate
@@ -48,7 +48,7 @@ spec:
       failureLimit: 3
       provider:
         prometheus:
-          address: http://192.168.56.100
+          address: http://192.168.56.100:9090
           query: |
             sum(flask_health_status{job="{{args.service-name}}"})
             / count(flask_health_check_total{job="{{args.service-name}}"})
@@ -61,7 +61,7 @@ spec:
       failureLimit: 3
       provider:
         prometheus:
-          address: http://192.168.56.100
+          address: http://192.168.56.100:9090 #http://prometheus-server.monitoring.svc.cluster.local
           query: |
             sum(flask_ready_status{job="{{args.service-name}}"})
             / count(flask_ready_check_total{job="{{args.service-name}}"})
@@ -74,6 +74,6 @@ spec:
       failureLimit: 3
       provider:
         prometheus:
-          address: http://192.168.56.100
+          address: http://192.168.56.100:9090 #http://prometheus-server.monitoring.svc.cluster.local
           query: |
             (avg(flask_health_status{job="{{args.service-name}}"}) + avg(flask_ready_status{job="{{args.service-name}}"})) / 2
