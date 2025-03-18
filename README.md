@@ -2,13 +2,13 @@
 
 ## **Table of Contents**
 1. 📌 [Introduction to Canary Deployment](#introduction-to-canary-deployment)
-   - [What is Canary Deployment?](#what-is-canary-deployment)
-   - [Benefits of Canary Deployment](#benefits-of-canary-deployment)
+       - [What is Canary Deployment?](#what-is-canary-deployment)
+       - [Benefits of Canary Deployment](#benefits-of-canary-deployment)
 
 2. 🏆 [Canary Deployment with Argo Rollouts](#canary-deployment-with-argo-rollouts-smarter-progressive-delivery)
-   -    [Overview of the Project](#overview-of-the-project)
-   - 🔬 [Project Key Features](#project-key-features)
-   - 🛠️ [Technologies Used](#technologies-used)
+       - 🔄 [Overview of the Project](#overview-of-the-project)
+       - 🔬 [Project Key Features](#project-key-features)
+       - 🛠️ [Technologies Used](#technologies-used)
 
 3. 🚀 [Implementing Canary Deployment with Argo Rollouts](#implementing-canary-deployment-with-argo-rollouts)
    - 🔧 [Setting Up Argo Rollouts](#setting-up-argo-rollouts)
@@ -541,7 +541,7 @@ If a rollout fails due to poor performance, high error rates, or failed health c
 **Prometheus integration** allows the rollout to be gated by **real-time metrics**. If key performance indicators (KPIs) mentioned above fails, the rollout is **automatically aborted**. A rollback is also triggered if any metric falls below the defined failure conditions.
 
 ### **Prometheus Analysis Components:** 📊
-- The **[AnalysisTemplate]([analysis-template.yaml](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/Manifest_Files/analysis-template.yaml))** uses Prometheus queries to monitor the canary deployment. It tracks five key metrics:
+- The **[Analysis Template](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/Manifest_Files/analysis-template.yaml)** uses Prometheus queries to monitor the canary deployment. It tracks five key metrics:
 
 1. 🎯 **Success Rate:** Ensures the new version meets a success threshold of **`≥ 95%`** and rollbacks if success rate is **`< 90%`**.
 2. 🚀 **Error Rate:** Monitors failures; rollback is triggered if less than **`95%`** of requests succeed.
