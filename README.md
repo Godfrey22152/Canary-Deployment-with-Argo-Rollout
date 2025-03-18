@@ -14,10 +14,10 @@
    - 🔧 [Setting Up Argo Rollouts](#setting-up-argo-rollouts)
    - 🛠️ [Overview of the Rollout Strategy](#overview-of-the-rollout-strategy)
    - 🛠️ [Key Configuration Components](#key-configuration-components)
-          - [Rollout Configuration (`quiz-app-rollout.yaml`)](#1-rollout-configuration)
-          - [Canary Analysis with Prometheus (`analysis-template.yaml`)](#2-prometheus-based-canary-analysis)
-          - [Canary and Stable Services (`quiz-app-services.yaml`)](#3-canary-and-stable-services)
-          - [Ingress Configuration (`quiz-app-ingress.yaml`)](#4-ingress-configuration)
+     - [Rollout Configuration (`quiz-app-rollout.yaml`)](#1-rollout-configuration)
+     - [Canary Analysis with Prometheus (`analysis-template.yaml`)](#2-prometheus-based-canary-analysis)
+     - [Canary and Stable Services (`quiz-app-services.yaml`)](#3-canary-and-stable-services)
+     - [Ingress Configuration (`quiz-app-ingress.yaml`)](#4-ingress-configuration)
    - 🌐 [Conclusion](#conclusion)
 
 4. 🔄 [GitHub Actions for CI/CD Integration](#github-actions-for-cicd-integration)
@@ -629,7 +629,7 @@ The `Quiz App` application exposes metrics on port `:5000/metrics` endpoint **fo
 - **Prometheus Dashboards**
   ![Prometheus](images/prometheus-query.png)
   ![Prometheus](images/prometheus-rollout-phase.png)
-  ![Prometheus](images/prometheus-rollout-info)
+  ![Prometheus](images/prometheus-rollout-info.png)
 
 - **Grafana Imported Dashboards**
   ![Grafana](images/grafana.png)
