@@ -2,13 +2,13 @@
 
 ## **Table of Contents**
 1. 📌 [Introduction to Canary Deployment](#introduction-to-canary-deployment)
-       - [What is Canary Deployment?](#what-is-canary-deployment)
-       - [Benefits of Canary Deployment](#benefits-of-canary-deployment)
+   - [What is Canary Deployment?](#what-is-canary-deployment)
+   - [Benefits of Canary Deployment](#benefits-of-canary-deployment)
 
 2. 🏆 [Canary Deployment with Argo Rollouts](#canary-deployment-with-argo-rollouts-smarter-progressive-delivery)
-       - 🔄 [Overview of the Project](#overview-of-the-project)
-       - 🔬 [Project Key Features](#project-key-features)
-       - 🛠️ [Technologies Used](#technologies-used)
+   - 🔄 [Overview of the Project](#overview-of-the-project)
+   - 🔬 [Project Key Features](#project-key-features)
+   - 🛠️ [Technologies Used](#technologies-used)
 
 3. 🚀 [Implementing Canary Deployment with Argo Rollouts](#implementing-canary-deployment-with-argo-rollouts)
    - 🔧 [Setting Up Argo Rollouts](#setting-up-argo-rollouts)
@@ -47,6 +47,7 @@
 8. 🏁 [Conclusion](#conclusion)
 9. 📚 [References](#references)
 
+
 ---
 
 ## Introduction to Canary Deployment 🐦📊🔍
@@ -59,6 +60,7 @@ Canary Deployment is a progressive release strategy where a new application vers
 - 🔄 **Progressive exposure** – Control over traffic allocation to the new version.
 - 🚨 **Automated rollback** – Revert to the previous version if predefined metrics fail.
 - 📈 **Enhanced observability** – Continuous monitoring through metrics and logging.
+
 
 ---
 
