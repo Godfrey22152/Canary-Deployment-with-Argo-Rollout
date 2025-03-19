@@ -1,14 +1,14 @@
 # **Canary Deployment with Argo Rollouts** 🎯🔬🔥
 
 ## **Table of Contents**
-1. 📌 [Introduction to Canary Deployment](#introduction-to-canary-deployment)
-   - [What is Canary Deployment?](#what-is-canary-deployment)
+1. 📌 [Introduction to Canary Deployment](#introduction-to-canary-deployment-)
+   - [What is Canary Deployment?](#what-is-canary-deployment-)
    - [Benefits of Canary Deployment](#benefits-of-canary-deployment)
 
 2. 🏆 [Canary Deployment with Argo Rollouts](#canary-deployment-with-argo-rollouts-smarter-progressive-delivery)
-   - 🔄 [Overview of the Project](#overview-of-the-project)
-   - 🔬 [Project Key Features](#project-key-features)
-   - 🛠️ [Technologies Used](#technologies-used)
+   -    [Overview of the Project](#overview-of-the-project-)
+   - 🔬 [Project Key Features](#project-key-features-️️)
+   - 🛠️ [Technologies Used](#technologies-used-️️)
 
 3. 🚀 [Implementing Canary Deployment with Argo Rollouts](#implementing-canary-deployment-with-argo-rollouts)
    - 🔧 [Setting Up Argo Rollouts](#setting-up-argo-rollouts)
@@ -50,25 +50,26 @@
 
 ---
 
-## **Introduction to Canary Deployment** 🐦📊🔍
+## Introduction to Canary Deployment 🐦📊🔍
 
-### **What is Canary Deployment?** 📖🐦
-Canary Deployment is a progressive release strategy where a new application version is **gradually introduced** to a subset of users before a full deployment. This method **mitigates risk** by monitoring the new version’s performance against key metrics before completing the rollout. 🚀🔍✅
+### What is Canary Deployment? 📖🐦
+Canary Deployment is a progressive release strategy where a new application version is **gradually introduced** to a subset of users before a full deployment. This method **mitigates risk** by monitoring the new version’s performance against key metrics before completing the rollout.
 
-### **Benefits of Canary Deployment** ✅🔄📈
-- **Minimized risk** – Issues are detected before full deployment.
-- **Progressive exposure** – Control over traffic allocation to the new version.
-- **Automated rollback** – Revert to the previous version if predefined metrics fail.
-- **Enhanced observability** – Continuous monitoring through metrics and logging.
+### **Benefits of Canary Deployment:**
+- ✅ **Minimized risk** – Issues are detected before full deployment.
+- 🔄 **Progressive exposure** – Control over traffic allocation to the new version.
+- 🚨 **Automated rollback** – Revert to the previous version if predefined metrics fail.
+- 📈 **Enhanced observability** – Continuous monitoring through metrics and logging.
 
 ---
 
-## **Canary Deployment with Argo Rollouts: Smarter Progressive Delivery** 🎯🚀🔬
+## Canary Deployment with Argo Rollouts: Smarter Progressive Delivery
 
-### **Overview of the Project** 🎯📜
-This project showcases an advanced **Canary Deployment** strategy using **Argo Rollouts** to ensure seamless, controlled application releases in a Kubernetes environment. By leveraging **progressive traffic shifting, automatic rollback mechanisms, and real-time monitoring with Prometheus**, we enhance reliability while minimizing deployment risks. 🏗️📡
+### Overview of the Project 🎯
 
-Additionally, **GitHub Actions** is integrated for a full CI/CD pipeline, automating **code linting, security scanning, testing, containerization, and deployment**. This project follows industry best practices to enable a smooth, efficient, and highly observable deployment workflow. 🚀✅
+This project showcases an advanced **Canary Deployment** strategy using **Argo Rollouts** to ensure seamless, controlled application releases in a Kubernetes environment. By leveraging **progressive traffic shifting, automatic rollback mechanisms, and real-time monitoring with Prometheus**, we enhance reliability while minimizing deployment risks.
+
+Additionally, **GitHub Actions** is integrated for a full CI/CD pipeline, automating **code linting, security scanning, testing, containerization, and deployment**. This project follows industry best practices to enable a smooth, efficient, and highly observable deployment workflow.
 
 - 🔹 **Progressively release new versions without downtime**
 - 🔹 **Real-time monitoring of application health using Prometheus metrics**
@@ -80,29 +81,39 @@ This repository provides a fully automated pipeline, ensuring that updates are s
 
 ---
 
-### **Project Key Features** 🔬🏆🛠️
+### 🔬**Project Key Features** 🏆🛠️🏗️
 
-1. **Automated Progressive Traffic Shifting** – Utilized **Argo Rollout strategy** for controlled traffic shifting and splitting between `stable` and `canary` versions.
-2. **Observability & Metrics Monitoring** – Configured **Prometheus** for rollout analysis to track application health and integrated **Grafana** to visualize metrics, enabling insightful monitoring and data-driven decision-making.
-3. **Automated Rollbacks** – Detects failures and reverts changes seamlessly using **Argo Rollout Analysis**.
-4. **CI/CD Pipeline Integration** – Automates linting, security scanning, testing, containerization, and deployments with **GitHub Actions**.
-5. **Kubernetes Ingress with NGINX** – Handles external traffic routing. 🌐⚙️
+1. ⚡ **Automated Progressive Traffic Shifting** – Utilized **Argo Rollout strategy** for controlled traffic shifting and splitting between `stable` and `canary` versions.
+2. 📊 **Observability & Metrics Monitoring** – Configured **Prometheus** for rollout analysis to track application health and integrated **Grafana** to visualize metrics, enabling insightful monitoring and data-driven decision-making.
+3. ⚙️ **Automated Rollbacks** – Detects failures and revert changes seamlessly using **Argo Rollout Analysis**.
+4. 🔄 **CI/CD Pipeline Integration** – Automates linting, security scanning, testing, containerization, and deployments with **GitHub Actions**.
+5. 📡 **Kubernetes Ingress with NGINX**: Handles external traffic routing.
 
 ---
 
-### **Technologies Used** 🛠️⚙️📡
+### **Technologies Used** 🛠️⚙️
 
 - **Argo Rollouts** – Advanced deployment controller for Kubernetes.
-- **Prometheus** – Real-time monitoring and visualization. 📡📊
-- **Grafana** – Visualized the metrics from the controller using Grafana dashboards. 📈🎛️
+
+- **Prometheus** – Real-time monitoring and visualization.
+
+- **Grafana** - visualized the metrics from the controller using Grafana dashboards.
+
 - **NGINX Ingress Controller** – Traffic management.
+
 - **Self-hosted Kubernetes (Kubeadm Cluster)** – Managed using Vagrant & VirtualBox.
+
 - **GitHub Actions with Self-hosted Runner** – Continuous Integration & Deployment.
-- **Docker** – Used to develop, ship, and run applications within lightweight containers.
-- **Trivy** – Runs Trivy to scan the repositories for **HIGH** and **CRITICAL** vulnerabilities.
-- **Bandit** – Runs Bandit for security-focused static analysis.
-- **Docker Scout** – Runs Docker Scout scans on Docker images for vulnerabilities.
-- **Nexus3** – Used to store project artifacts in a **Nexus Repository** for audit purposes.
+
+- **Docker** - used to develop, ship, and run applications within lightweight containers.
+
+- **Trivy** - Runs Trivy to scan the repositories for **HIGH** and **CRITICAL** vulnerabilities.
+
+- **Bandit** - Runs Bandit for security-focused static analysis.
+
+- **Docker Scout** - Runs Docker Scout scans on docker images for vulnerabilities.
+
+- **Nexus3** - Used to store project artifacts in a **Nexus Repository** for audit purposes.
 
 ---
 
@@ -356,7 +367,7 @@ Replicas:
 NAME                                                     KIND        STATUS     AGE    INFO
 ⟳ rollouts-traffic-management                            Rollout     ✔ Healthy  4m
 └──# revision:1
-   └──⧉ rollouts-traffic-management-56b8c46f7f           ReplicaSet  ✔ Healthy  3m57s  stable
+   └──⧉ rollouts-traffic-management-56b8c46f7f          ReplicaSet  ✔ Healthy  3m57s  stable
       ├──□ rollouts-traffic-management-56b8c46f7f-84bfk  Pod         ✔ Running  3m52s  ready:1/1,restarts:1
       ├──□ rollouts-traffic-management-56b8c46f7f-gqhjq  Pod         ✔ Running  3m52s  ready:1/1,restarts:1
       ├──□ rollouts-traffic-management-56b8c46f7f-kgllv  Pod         ✔ Running  3m52s  ready:1/1,restarts:1
@@ -385,7 +396,7 @@ Replicas:
 NAME                                                     KIND         STATUS        AGE    INFO
 ⟳ rollouts-traffic-management                            Rollout      ✔ Healthy     11m
 ├──# revision:2
-│  ├──⧉ rollouts-traffic-management-85f7b557d9           ReplicaSet   ✔ Healthy     6m10s  stable
+│  ├──⧉ rollouts-traffic-management-85f7b557d9          ReplicaSet   ✔ Healthy     6m10s  stable
 │  │  ├──□ rollouts-traffic-management-85f7b557d9-ggzvr  Pod          ✔ Running     6m10s  ready:1/1
 │  │  ├──□ rollouts-traffic-management-85f7b557d9-bxfqm  Pod          ✔ Running     4m59s  ready:1/1
 │  │  ├──□ rollouts-traffic-management-85f7b557d9-vrwt9  Pod          ✔ Running     3m42s  ready:1/1
