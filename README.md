@@ -50,27 +50,25 @@
 
 ---
 
-## Introduction to Canary Deployment 🐦📊🔍
+## **Introduction to Canary Deployment** 🐦📊🔍
 
-### What is Canary Deployment? 📖🐦
-Canary Deployment is a progressive release strategy where a new application version is **gradually introduced** to a subset of users before a full deployment. This method **mitigates risk** by monitoring the new version’s performance against key metrics before completing the rollout.
+### **What is Canary Deployment?** 📖🐦
+Canary Deployment is a progressive release strategy where a new application version is **gradually introduced** to a subset of users before a full deployment. This method **mitigates risk** by monitoring the new version’s performance against key metrics before completing the rollout. 🚀🔍✅
 
-### **Benefits of Canary Deployment:**
-- ✅ **Minimized risk** – Issues are detected before full deployment.
-- 🔄 **Progressive exposure** – Control over traffic allocation to the new version.
-- 🚨 **Automated rollback** – Revert to the previous version if predefined metrics fail.
-- 📈 **Enhanced observability** – Continuous monitoring through metrics and logging.
-
+### **Benefits of Canary Deployment** ✅🔄📈
+- **Minimized risk** – Issues are detected before full deployment.
+- **Progressive exposure** – Control over traffic allocation to the new version.
+- **Automated rollback** – Revert to the previous version if predefined metrics fail.
+- **Enhanced observability** – Continuous monitoring through metrics and logging.
 
 ---
 
-## Canary Deployment with Argo Rollouts: Smarter Progressive Delivery
+## **Canary Deployment with Argo Rollouts: Smarter Progressive Delivery** 🎯🚀🔬
 
-### Overview of the Project 🎯
+### **Overview of the Project** 🎯📜
+This project showcases an advanced **Canary Deployment** strategy using **Argo Rollouts** to ensure seamless, controlled application releases in a Kubernetes environment. By leveraging **progressive traffic shifting, automatic rollback mechanisms, and real-time monitoring with Prometheus**, we enhance reliability while minimizing deployment risks. 🏗️📡
 
-This project showcases an advanced **Canary Deployment** strategy using **Argo Rollouts** to ensure seamless, controlled application releases in a Kubernetes environment. By leveraging **progressive traffic shifting, automatic rollback mechanisms, and real-time monitoring with Prometheus**, we enhance reliability while minimizing deployment risks.
-
-Additionally, **GitHub Actions** is integrated for a full CI/CD pipeline, automating **code linting, security scanning, testing, containerization, and deployment**. This project follows industry best practices to enable a smooth, efficient, and highly observable deployment workflow.
+Additionally, **GitHub Actions** is integrated for a full CI/CD pipeline, automating **code linting, security scanning, testing, containerization, and deployment**. This project follows industry best practices to enable a smooth, efficient, and highly observable deployment workflow. 🚀✅
 
 - 🔹 **Progressively release new versions without downtime**
 - 🔹 **Real-time monitoring of application health using Prometheus metrics**
@@ -78,43 +76,33 @@ Additionally, **GitHub Actions** is integrated for a full CI/CD pipeline, automa
 - 🔹 **Automated rollout analysis to detect anomalies before full release**
 - 🔹 **CI/CD integration with GitHub Actions for seamless deployment**
 
-This repository provides a fully automated pipeline, ensuring that updates are safe, tested, and monitored before full rollout.
+This repository provides a fully automated pipeline, ensuring that updates are safe, tested, and monitored before full rollout. 🏆📈
 
 ---
 
-### 🔬**Project Key Features** 🏆🛠️🏗️
+### **Project Key Features** 🔬🏆🛠️
 
-1. ⚡ **Automated Progressive Traffic Shifting** – Utilized **Argo Rollout strategy** for controlled traffic shifting and splitting between `stable` and `canary` versions.
-2. 📊 **Observability & Metrics Monitoring** – Configured **Prometheus** for rollout analysis to track application health and integrated **Grafana** to visualize metrics, enabling insightful monitoring and data-driven decision-making.
-3. ⚙️ **Automated Rollbacks** – Detects failures and revert changes seamlessly using **Argo Rollout Analysis**.
-4. 🔄 **CI/CD Pipeline Integration** – Automates linting, security scanning, testing, containerization, and deployments with **GitHub Actions**.
-5. 📡 **Kubernetes Ingress with NGINX**: Handles external traffic routing.
+1. **Automated Progressive Traffic Shifting** – Utilized **Argo Rollout strategy** for controlled traffic shifting and splitting between `stable` and `canary` versions.
+2. **Observability & Metrics Monitoring** – Configured **Prometheus** for rollout analysis to track application health and integrated **Grafana** to visualize metrics, enabling insightful monitoring and data-driven decision-making.
+3. **Automated Rollbacks** – Detects failures and reverts changes seamlessly using **Argo Rollout Analysis**.
+4. **CI/CD Pipeline Integration** – Automates linting, security scanning, testing, containerization, and deployments with **GitHub Actions**.
+5. **Kubernetes Ingress with NGINX** – Handles external traffic routing. 🌐⚙️
 
 ---
 
-### **Technologies Used** 🛠️⚙️
+### **Technologies Used** 🛠️⚙️📡
 
 - **Argo Rollouts** – Advanced deployment controller for Kubernetes.
-
-- **Prometheus** – Real-time monitoring and visualization.
-
-- **Grafana** - visualized the metrics from the controller using Grafana dashboards.
-
+- **Prometheus** – Real-time monitoring and visualization. 📡📊
+- **Grafana** – Visualized the metrics from the controller using Grafana dashboards. 📈🎛️
 - **NGINX Ingress Controller** – Traffic management.
-
 - **Self-hosted Kubernetes (Kubeadm Cluster)** – Managed using Vagrant & VirtualBox.
-
 - **GitHub Actions with Self-hosted Runner** – Continuous Integration & Deployment.
-
-- **Docker** - used to develop, ship, and run applications within lightweight containers.
-
-- **Trivy** - Runs Trivy to scan the repositories for **HIGH** and **CRITICAL** vulnerabilities.
-
-- **Bandit** - Runs Bandit for security-focused static analysis.
-
-- **Docker Scout** - Runs Docker Scout scans on docker images for vulnerabilities.
-
-- **Nexus3** - Used to store project artifacts in a **Nexus Repository** for audit purposes.
+- **Docker** – Used to develop, ship, and run applications within lightweight containers.
+- **Trivy** – Runs Trivy to scan the repositories for **HIGH** and **CRITICAL** vulnerabilities.
+- **Bandit** – Runs Bandit for security-focused static analysis.
+- **Docker Scout** – Runs Docker Scout scans on Docker images for vulnerabilities.
+- **Nexus3** – Used to store project artifacts in a **Nexus Repository** for audit purposes.
 
 ---
 
@@ -196,7 +184,7 @@ The **Rollout** resource defines how traffic gradually shifts from the stable ve
 #### 2. Prometheus-Based Canary Analysis 📡📊🔍
 - **File:** **[analysis-template.yaml](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/Manifest_Files/analysis-template.yaml)**
 
-The **AnalysisTemplate** uses Prometheus queries to monitor the canary deployment. It tracks five key metrics:
+The **Analysis Template** uses Prometheus queries to monitor the canary deployment. It tracks five key metrics:
 
 1. 🎯 **Success Rate:** Ensures the new version meets a success threshold of **`≥ 95%`** and rollbacks if success rate is **`< 90%`**.
 2. 🚀 **Error Rate:** Monitors failures; rollback is triggered if less than **`95%`** of requests succeed.
@@ -236,7 +224,7 @@ This implementation ensures a **safe and controlled rollout** of new versions wh
 The **[GitHub Actions workflow](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/.github/workflows/canary-deployment-workflow.yml)** automates the CI/CD pipeline for the deployment of the Canary project. It ensures that every change undergoes rigorous testing, security scans, and is deployed reliably to the Kubernetes cluster. The workflow supports both **stable** and **canary** release types, allowing for selective deployment strategies. ✅🚀🛠️
 
 ### Workflow Trigger Mechanism 🎛️⏳🔄
-- The workflow is manually triggered via **workflow_dispatch**, prompting the user to select the release type (`stable` or `canary`). The choice of release type also determins the choice of the branch used for the build (**`[main](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout)`** or **`[canary](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/tree/canary)`**). ⚡🖱️💻
+- The workflow is manually triggered via **workflow_dispatch**, prompting the user to select the release type (`stable` or `canary`). The choice of release type also determins the choice of the branch used for the build: (**[`main`](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout)** or **[`canary`](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/tree/canary)**) branch. ⚡🖱️💻
 
 ---
 
@@ -304,7 +292,7 @@ The workflow runs on a **[self-hosted runner](https://github.com/Godfrey22152/Ca
 - Fetches `Manifest_Files/` from `main` if not already present (If the `canary` branch is used for the build). ✅📂🔄
 
 ##### **Step 14: Update Image Tag in Kubernetes Manifest** 🔄🖥️📑
-- Modifies **`[Manifest_Files/quiz-app-rollout.yaml](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/fd7721949732b1dfe6b6323366bb8d2e425e40fa/Manifest_Files/quiz-app-rollout.yaml#L44)`** to update the image tag with the newly built Docker image. 🛠️📜📂
+- Modifies **[Manifest_Files/quiz-app-rollout.yaml](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/fd7721949732b1dfe6b6323366bb8d2e425e40fa/Manifest_Files/quiz-app-rollout.yaml#L44)** file to update the image tag with the newly built Docker image. 🛠️📜📂
 
 ##### **Step 15: Deploy to Kubernetes** ☸️🚀🖥️
 - Applies Kubernetes manifests using `kubectl`.
