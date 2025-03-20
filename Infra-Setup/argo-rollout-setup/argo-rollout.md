@@ -242,7 +242,7 @@ helm install ${HELM_RELEASE_NAME} ${HELM_REPO}/${HELM_RELEASE_NAME} \
 ```bash
 kubectl get pods -n ${NAMESPACE}
 ```
-**Example Output:**
+**Expected output:**
 ```bash
 NAME                                           READY   STATUS             RESTARTS       AGE
 argo-rollouts-69566b6478-j7kn2                 1/1     Running            0              1h
@@ -255,7 +255,7 @@ argo-rollouts-dashboard-f6bf5fc46-5zcdz        1/1     Running            0     
 kubectl get svc -n ${NAMESPACE}
 ```
 
-**Example Output:**
+**Expected output:**
 ```bash
 NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
 argo-rollouts-dashboard   ClusterIP   10.97.27.36      <none>        3100/TCP   1h
@@ -269,13 +269,38 @@ Check whether the Argo Rollouts Dashboard host (`argorollouts.dashboard.com`) ha
 kubectl get ingress -n ${NAMESPACE}
 ```
 
-**Example Output:**
+**Expected output:**
 ```bash
 NAME                          CLASS   HOSTS                        ADDRESS          PORTS   AGE
-argo-rollouts-dashboard       nginx   argorollouts.dashboard.com   192.168.56.103   80      1h
+argo-rollouts-dashboard       nginx   argorollouts.dashboard.com   <EXTERNAL-IP>    80      1h
 ```
 
-- **To manage Argo Rollouts use the command for help:**
+If the `ADDRESS` column is empty, get your **NGINX Ingress Controller's external IP:**
+```bash
+kubectl get svc -n ingress-nginx
+```
+
+---
+
+# 1️⃣1️⃣ **Update Your DNS (or Edit `/etc/hosts` for Local Testing)**
+If you don't have a public domain (`argorollouts.dashboard.com`), you can test locally by adding an entry to your **local machine's** `/etc/hosts file`:
+
+```bash
+echo "<EXTERNAL-IP> argorollouts.dashboard.com" | sudo tee -a /etc/hosts
+```
+Replace `<EXTERNAL-IP>` with the external IP of your Ingress Controller.
+
+---
+
+# 1️⃣2️⃣ Access the Dashboard
+Now, open your browser and go to:
+```bash
+http://argorollouts.dashboard.com
+```
+
+---
+
+# 1️⃣3️⃣ To manage Argo Rollouts use the command for help:
 ```bash
 kubectl-argo-rollouts --help
 ```
