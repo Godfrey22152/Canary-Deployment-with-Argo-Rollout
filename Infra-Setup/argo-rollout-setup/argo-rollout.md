@@ -282,7 +282,7 @@ kubectl get svc -n ingress-nginx
 
 ---
 
-# 1️⃣1️⃣ **Update Your DNS (or Edit `/etc/hosts` for Local Testing)**
+## 1️⃣1️⃣ **Update Your DNS (or Edit `/etc/hosts` for Local Testing)**
 If you don't have a public domain (`argorollouts.dashboard.com`), you can test locally by adding an entry to your **local machine's** `/etc/hosts file`:
 
 ```bash
@@ -292,7 +292,7 @@ Replace `<EXTERNAL-IP>` with the external IP of your Ingress Controller.
 
 ---
 
-# 1️⃣2️⃣ Access the Dashboard
+## 1️⃣2️⃣ Access the Dashboard
 Now, open your browser and go to:
 ```bash
 http://argorollouts.dashboard.com
@@ -300,7 +300,7 @@ http://argorollouts.dashboard.com
 
 ---
 
-# 1️⃣3️⃣ To manage Argo Rollouts use the command for help:
+## 1️⃣3️⃣ To manage Argo Rollouts use the command for help:
 ```bash
 kubectl-argo-rollouts --help
 ```
