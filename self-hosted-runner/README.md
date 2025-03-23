@@ -1,5 +1,5 @@
 # GitHub Actions Self-Hosted Runner Setup on Linux
-This guide provides step-by-step instructions for setting up a self-hosted GitHub Actions runner on a Linux machine (Virtual machine) using Vagrant and VirtualBox. The Vagrantfile provisions an Ubuntu 22.04 environment with necessary tools such as Python, Docker, Trivy, Bandit, Pytest, and Docker Scout CLI.
+This guide provides step-by-step instructions for setting up a self-hosted GitHub Actions runner on a Linux machine (Virtual machine) using **Vagrant** and **VirtualBox**. The Vagrantfile provisions an Ubuntu 22.04 environment with necessary tools such as **Python**, **Docker**, **Trivy**, **Bandit**, **Pytest**, and **Docker Scout CLI**.
 
 ## Prerequisites
 
@@ -117,8 +117,8 @@ Replace `YOUR_GITHUB_REPO` with your repository URL and `YOUR_RUNNER_TOKEN` with
 
 1. When prompted, provide a name for the runner group to add the runner to (or press Enter to use the default).
 2. When prompted, provide a name for the runner=`Any Name` (or press Enter to use the default).
-3. When prompted to enter additional **Labels** for the runner, **[Press Enter to Skip](Press Enter to Skip)** as the runner will have the following Labels: `self-hosted`, `Linux`, `X64`.
-4. Select a working directory where the runner will execute jobs (default is the current directory `_work`). Therefore, **[Press Enter for _work](Press Enter for _work)**  
+3. When prompted to enter additional **Labels** for the runner, **[Press Enter to Skip](#Press Enter to Skip)** as the runner will have the following Labels: `self-hosted`, `Linux`, `X64`.
+4. Select a working directory where the runner will execute jobs (default is the current directory `_work`). Therefore, **[Press Enter for _work](#Press Enter for _work)**  
 
 ### Step 3: Start the Runner and bring it `Online`.
 Start the runner manually:
