@@ -459,7 +459,7 @@ http://192.168.56.100:9090/targets
 ### Prometheus Images
 
 - **Prometheus Targets**
-  ![Prometheus Targets](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/tree/main/images/prometheus-targets.png)
+  ![Prometheus Targets](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/prometheus-targets.png)
 
 - **Prometheus Query Samples**
   ![Prometheus Queries](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/Prometheus-argo-rollout-controller.png)
