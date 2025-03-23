@@ -1,13 +1,15 @@
-## Overview
-
-This guide explains how to set up a self-hosted agent for Azure CI/CD pipeline using Vagrant and VirtualBox. The Vagrantfile provisions an Ubuntu 22.04 environment with necessary tools such as Python, Docker, Trivy, Bandit, Pytest, and Docker Scout CLI.
+# GitHub Actions Self-Hosted Runner Setup on Linux
+This guide provides step-by-step instructions for setting up a self-hosted GitHub Actions runner on a Linux machine (Virtual machine) using Vagrant and VirtualBox. The Vagrantfile provisions an Ubuntu 22.04 environment with necessary tools such as Python, Docker, Trivy, Bandit, Pytest, and Docker Scout CLI.
 
 ## Prerequisites
 
-Before starting, ensure you have the following installed on your host machine:
-
-1. [Vagrant](https://www.vagrantup.com/downloads)
-2. [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+1. A GitHub repository or organization where the runner will be registered.
+2. A Linux-based server or virtual machine. 
+   - Before starting, ensure you have the following installed on your host machine (If using Virtual machine):
+       - [Vagrant](https://www.vagrantup.com/downloads)
+       - [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+     
+3. `curl`, `tar,` and `systemd` installed on the machine.
 
 ## Setting Up the Vagrant Environment
 
@@ -79,42 +81,101 @@ Once the setup is complete, SSH into the Vagrant machine:
 vagrant ssh
 
 ```
-You now have a self-hosted agent environment with all required tools installed.
+You now have a self-hosted runner environment (Linux-server setup through Virtual machine and Vagrant) with all required tools installed.
 
-## Configuring the Agent for Azure DevOps
+---
 
-### Step 1: Download the Agent
-Within the Vagrant machine, download the Azure Pipelines agent:
+## Configuring the Server for the GitHub Actions Runner
+
+### Step 1: Create a Self-Hosted Runner in GitHub
+1. Navigate to your GitHub repository.
+2. Go to **Settings > Actions > Runners**.
+3. Click **New self-hosted runner**.
+4. Select **Linux** as the runner image.
+5. Copy the provided setup commands.
+
+### Step 2: Install and Configure the Runner
+Run the following commands on your Linux machine:
 
 ```sh
-# Replace 'your-organization' and 'your-project' with your actual Azure DevOps organization and project names.
-wget https://vstsagentpackage.azureedge.net/agent/3.242.1/vsts-agent-linux-x64-3.242.1.tar.gz
-mkdir myagent && cd myagent
-tar zxvf ~/Downloads/vsts-agent-linux-x64-3.242.1.tar.gz
+# Create a directory for the runner
+mkdir actions-runner && cd actions-runner
 
+# Download the latest runner package
+curl -o actions-runner-linux-x64-2.322.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz
+
+# Extract the runner package
+tar xzf ./actions-runner-linux-x64-2.322.0.tar.gz
+
+# Create the runner and start the configuration experience
+./config.sh --url https://github.com/YOUR_GITHUB_REPO --token YOUR_RUNNER_TOKEN
 ```
-### Step 2: Configure the Agent
-Configure the agent by running the configuration script:
 
+Replace `YOUR_GITHUB_REPO` with your repository URL and `YOUR_RUNNER_TOKEN` with the token obtained from GitHub.
+
+#### Configuration Steps:
+
+1. When prompted, provide a name for the runner group to add the runner to (or press Enter to use the default).
+2. When prompted, provide a name for the runner=`Any Name` (or press Enter to use the default).
+3. When prompted to enter additional **Labels** for the runner, **[Press Enter to Skip](Press Enter to Skip)** as the runner will have the following Labels: `self-hosted`, `Linux`, `X64`.
+4. Select a working directory where the runner will execute jobs (default is the current directory `_work`). Therefore, **[Press Enter for _work](Press Enter for _work)**  
+
+### Step 3: Start the Runner and bring it `Online`.
+Start the runner manually:
 ```sh
-# Replace the placeholder values with your actual Azure DevOps details
-./config.sh --url https://dev.azure.com/your-organization --agent SelfHostedAgent --pool Default --work _work --auth pat --token YOUR_PERSONAL_ACCESS_TOKEN
-
-# Or Configure the agent by running the configuration script and Follow the prompts to complete the configuration.
-./config.sh
-```
-### Step 3: Run the Agent
-Start the agent:
-
-```
 ./run.sh
 ```
-The agent is now ready and should be available in your Azure DevOps organization.
+
+To run the runner as a systemd service:
+```sh
+sudo ./svc.sh install
+sudo ./svc.sh start
+```
+
+### Step 4: Verify the Runner
+1. Go to **Settings > Actions > Runners** in your GitHub repository.
+2. The runner should appear as **Online**.
+3. Run a GitHub Actions workflow to test it.
+
+### Step 5: Updating the Runner
+To update the runner when a new version is released:
+```sh
+./svc.sh stop
+./config.sh remove
+rm -rf *
+
+# Redownload and extract the latest version
+curl -o actions-runner-linux-x64-2.322.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz
+
+# Reconfigure the runner
+./config.sh --url https://github.com/YOUR_GITHUB_REPO --token YOUR_RUNNER_TOKEN
+
+# Restart the Runner manually
+./run.sh
+
+Or
+
+# Restart the service
+sudo ./svc.sh install
+sudo ./svc.sh start
+```
+
+### Step 6: Removing the Runner
+To remove the runner from GitHub:
+```sh
+./config.sh remove
+```
+
+Then delete the runner directory:
+```sh
+cd ..
+rm -rf actions-runner
+```
 
 ## Conclusion
-By following this guide, you have successfully set up a self-hosted agent using Vagrant and VirtualBox, configured it with necessary tools, and connected it to your Azure DevOps organization. You can now use this agent to run your CI/CD pipelines.
+By following this guide, You have successfully set up a self-hosted GitHub Actions runner on Linux. This allows you to run workflows on your own infrastructure, providing greater flexibility and control over CI/CD pipelines.
 
 ## Additional Resources
-1. [Azure DevOps Documentation](https://learn.microsoft.com/en-us/azure/devops/?view=azure-devops)
+1. [GitHub Actions Self-Hosted Runners Documentation](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners)
 2. [Vagrant Cheat Sheet](https://gist.github.com/wpscholar/a49594e2e2b918f4d0c4)
 
