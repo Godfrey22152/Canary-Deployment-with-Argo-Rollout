@@ -68,7 +68,7 @@ HELM_RELEASE_NAME="prometheus"
 HELM_REPO="prometheus-community"
 CHART_NAME="kube-prometheus-stack"
 MANIFEST_DIR="./helm_manifests/prometheus"
-MANIFEST_FILE="${MANIFEST_DIR}/installation_prometheus.${APP_VERSION}.yaml"
+MANIFEST_FILE="${MANIFEST_DIR}/installation_prometheus.${CHART_VERSION}.yaml"
 ```
 
 ---
@@ -80,28 +80,79 @@ kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -
 
 ---
 
-## 6️⃣ Store Helm-Generated Manifest for GitOps
+## 6️⃣ Extract, Customize, and Store Helm Values and Manifest for GitOps
+
+To ensure a **GitOps-friendly** deployment of Prometheus, we will first extract the **default values file**, modify it with the required configurations, and then use it to deploy Prometheus.
+
+### 📌 Step 1️⃣: Pull the Default Values File
+Before customizing Prometheus, extract its default Helm values file:
 ```sh
 mkdir -p ${MANIFEST_DIR}
+helm show values ${HELM_REPO}/${CHART_NAME} --version ${CHART_VERSION} > ${MANIFEST_DIR}/values-prometheus.${CHART_VERSION}.yaml
+```
+**This command:**
+- **Creates** the `./helm_manifests/prometheus` directory for storing Helm manifests. 
+- **Pulls the default values** for the `kube-prometheus-stack` Helm chart.
+- **Saves it** to `${MANIFEST_DIR}/values-prometheus.${CHART_VERSION}.yaml`.
+- **Ensures consistency** with the Helm chart version in use.
 
+### 📌 Step 2️⃣: Customize the Values File
+Open the `values-prometheus.${CHART_VERSION}.yaml` file and modify the parameters as you wish for your cluster, **For Instance**:
+```sh
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: openebs-hostpath
+          resources:
+            requests:
+              storage: 8Gi
+
+grafana:
+  enabled: true
+  adminPassword: "admin"
+
+alertmanager:
+  enabled: true
+```
+
+### 📌 Step 3️⃣: Store Helm-Generated Manifest for GitOps
+Now, generate and store the customized Helm manifest:
+
+```sh
 helm template ${HELM_RELEASE_NAME} ${HELM_REPO}/${CHART_NAME} \
   --namespace ${NAMESPACE} \
   --version ${CHART_VERSION} \
-  --values ${MANIFEST_DIR}/values-prometheus.${APP_VERSION}.yaml \
+  --values ${MANIFEST_DIR}/values-prometheus.${CHART_VERSION}.yaml \
   > ${MANIFEST_FILE}
 ```
-👉 **Commit this YAML file to Git** for version tracking and declarative deployments.
+**This step:**
+- **Generates a full Kubernetes manifest** from Helm.
+- **Saves the generated YAML** for GitOps-style declarative deployment.
 
-### 🔹 Commit Manifest to Git
+👉 **Commit the YAML files to Git** for version tracking and declarative deployments.
+
+
+### 📌 Step 4️⃣ (Optional) Install Prometheus using the customized values file in GitOps
+Use Helm to install Prometheus with the customized values file:
 ```sh
-git add ${MANIFEST_FILE}
-git commit -m "Add Prometheus Helm manifest for GitOps"
-git push origin main
+helm install ${HELM_RELEASE_NAME} ${HELM_REPO}/${CHART_NAME} \
+  --namespace ${NAMESPACE} \
+  --version ${CHART_VERSION} \
+  --values ${MANIFEST_DIR}/values-prometheus.${CHART_VERSION}.yaml
 ```
+#### ✅ Why Use a Pulled Values File Instead of Inline `--set` Flags?
+- ✔ Readability → The configuration is structured and easy to manage.
+- ✔ Version Control → Any changes can be tracked using Git.
+- ✔ GitOps-Friendly → Ensures declarative configuration for CI/CD.
+- ✔ Scalability → Easier to modify as the stack grows.
 
 ---
 
-## 7️⃣ Deploy Using Helm for Lifecycle Management
+## 7️⃣ Deploy Prometheus Using Helm for Lifecycle Management (RECOMMENDED)
 
 ### ✅ Option 1: If Persistent Storage is Automatically Provisioned
 ```sh
@@ -167,10 +218,10 @@ kubectl get svc -n ${NAMESPACE}
 NAME                                             TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                         AGE
 alertmanager-operated                            ClusterIP      None             <none>           9093/TCP,9094/TCP,9094/UDP      1h
 kube-prometheus-stack-alertmanager               ClusterIP      10.111.155.232   <none>           9093/TCP,8080/TCP               1h
-kube-prometheus-stack-grafana                    LoadBalancer   10.105.193.58    <none>           80:31799/TCP                    1h
+kube-prometheus-stack-grafana                    ClusterIP      10.105.193.58    <none>           80:31799/TCP                    1h
 kube-prometheus-stack-kube-state-metrics         ClusterIP      10.107.6.171     <none>           8080/TCP                        1h
 kube-prometheus-stack-operator                   ClusterIP      10.99.47.20      <none>           443/TCP                         1h
-kube-prometheus-stack-prometheus                 LoadBalancer   10.101.119.196   <none>           9090:31723/TCP,8080:30867/TCP   1h
+kube-prometheus-stack-prometheus                 ClusterIP      10.101.119.196   <none>           9090:31723/TCP,8080:30867/TCP   1h
 kube-prometheus-stack-prometheus-node-exporter   ClusterIP      10.106.233.217   <none>           9100/TCP                        1h
 prometheus-operated                              ClusterIP      None             <none>           9090/TCP                        1h
 ```
@@ -182,7 +233,7 @@ kubectl logs -l app.kubernetes.io/name=prometheus -n ${NAMESPACE}
 
 ---
 
-## 9. Accessing Prometheus, Grafana & AlertManager
+## 9️⃣ Accessing Prometheus, Grafana & AlertManager
 
 ### ✅ First Approach: Port Forwarding
 
@@ -213,7 +264,7 @@ kubectl port-forward svc/${CHART_NAME}-alertmanager 9093:9093 -n ${NAMESPACE}
 #### 1️⃣ Expose Prometheus Dashboard
 Run this command to change the Prometheus service type to NodePort:
 ```bash
-kubectl patch svc prometheus-kube-prometheus-prometheus -n monitoring \
+kubectl patch svc kube-prometheus-stack-prometheus -n monitoring \
   -p '{"spec": {"type": "NodePort"}}'
 ```
 🔹 **Access Prometheus:**
@@ -230,7 +281,7 @@ http://<NODE_IP>:<NODEPORT>
 #### 2️⃣ Expose Grafana Dashboard
 Modify the Grafana service to `NodePort`:
 ```bash
-kubectl patch svc prometheus-grafana -n monitoring \
+kubectl patch svc kube-prometheus-stack-grafana -n monitoring \
   -p '{"spec": {"type": "NodePort"}}'
 ```
 
@@ -249,7 +300,7 @@ http://<NODE_IP>:<NODEPORT>
 #### 3️⃣ Expose AlertManager Dashboard
 Change the AlertManager service to `NodePort`:
 ```bash
-kubectl patch svc prometheus-kube-prometheus-alertmanager -n monitoring \
+kubectl patch svc kube-prometheus-stack-alertmanager -n monitoring \
   -p '{"spec": {"type": "NodePort"}}'
 ```
 
@@ -271,7 +322,7 @@ http://<NODE_IP>:<NODEPORT>
 #### 1️⃣ Expose Prometheus via LoadBalancer
 Run this command to modify the Prometheus service:
 ```bash
-kubectl patch svc prometheus-kube-prometheus-prometheus -n monitoring \
+kubectl patch svc kube-prometheus-stack-prometheus -n monitoring \
   -p '{"spec": {"type": "LoadBalancer"}}'
 ```
 
@@ -288,7 +339,7 @@ http://<EXTERNAL-IP>:9090
 #### 2️⃣ Expose Grafana via LoadBalancer
 Modify the Grafana service:
 ```bash
-kubectl patch svc prometheus-grafana -n monitoring \
+kubectl patch svc kube-prometheus-stack-grafana -n monitoring \
   -p '{"spec": {"type": "LoadBalancer"}}'
 ```
 
@@ -321,5 +372,76 @@ http://<EXTERNAL-IP>:9093
 ---
 
 #### 🛠 Troubleshooting (If EXTERNAL-IP Stays Pending)
-If your cluster is running in bare metal or a local environment, you may need MetalLB as a LoadBalancer solution.
-📌 Install MetalLB:
+If your cluster is running in bare metal or a local environment, you may need **MetalLB** as a **LoadBalancer solution**.
+📌 Follow this detailed installation guide to **[Install MetalLB](https://github.com/Godfrey22152/Production-Ready-method-for-installing-DevOps-Tools/blob/main/installations/metallb.md)** and configure an IP address pool for MetalLB to assign external IPs.🚀
+
+---
+
+## 📌 Why This Method is Best?
+✅ Version Control – You control installed versions, preventing unexpected updates.
+✅ Easy Rollback – helm rollback prometheus <REVISION> makes it easy to revert changes.
+✅ GitOps Ready – Store manifests in Git for traceability and automation.
+✅ Namespace Isolation – Keeps monitoring components organized.
+✅ Observability – Includes Prometheus, Grafana, Alertmanager, Node Exporter, ETC.
+
+---
+
+## 🔍🔥 Service Discovery using ServiceMonitor🔬
+
+The **kube-prometheus-stack** includes `Prometheus Operator`, which extends Kubernetes to manage Prometheus instances declaratively. By default, Prometheus only scrapes targets defined in its configuration file, but with `Prometheus Operator`, it dynamically discovers services using `ServiceMonitors` and `PodMonitors`.
+When the **Argo Rollouts' traffic management** is deployed with a **ServiceMonitor resource**, Prometheus automatically detects and scrapes its metrics without manual configuration.
+- **Recall:** The Helm chart sets `serviceMonitorSelectorNilUsesHelmValues=false` and `podMonitorSelectorNilUsesHelmValues=false`, meaning Prometheus will respect all **ServiceMonitors** and **PodMonitors** in the cluster.
+
+### ✅ Prometheus Service Discovery
+The **[Prometheus ServiceMonitor](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/Manifest_Files/ServiceMonitor.yaml)** file resource defines how Prometheus should scrape metrics from services related to **Argo Rollouts' traffic management** within the `argo-rollouts` namespace.
+
+**Services in the `argo-rollouts` namespace:**
+
+```sh
+kubectl get svc -n argo-rollouts
+NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+argo-rollouts-dashboard   ClusterIP   10.97.27.36      <none>        3100/TCP   1h
+argo-rollouts-metrics     ClusterIP   10.103.227.123   <none>        8090/TCP   1h
+canary-service            ClusterIP   10.109.176.102   <none>        5000/TCP   1h
+stable-service            ClusterIP   10.104.17.145    <none>        5000/TCP   1h
+```
+
+- **The **[Prometheus ServiceMonitor](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/Manifest_Files/ServiceMonitor.yaml)** instructs Prometheus to:**
+
+1. **Discover services** with the label `app: rollouts-traffic-management`.
+2. **Scrape two sets of metrics** every 10 seconds from:
+   - The main service **(Argo rollout controller service)**: **argo-rollouts-metrics** (port `metrics`, mapped to `8090`).
+   - The **Canary service** (port `http`, mapped to `5000`).
+3. **Authenticate requests** using credentials stored in the Kubernetes Secret **[Manifest_Files/quiz-app-secret.yaml](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/Manifest_Files/quiz-app-secret.yaml)** (`prometheus-auth`).
+4. **Only monitor services within the `argo-rollouts` namespace.**
+
+**This ensures Prometheus collects detailed rollout metrics for traffic management and canary analysis. 🚀**
+
+- **After the GitHubs Actions Pipeline runs and apply the ServiceMonitor file, verify if Service Monitor was created:**
+  ```sh
+  kubectl get servicemonitor -n argo-rollouts
+  ```
+  **Expected Output:**
+  ```sh
+  NAME               AGE
+  argo-rollouts        1h
+  rollouts-metrics     1h
+  ```
+
+### ✅ Prometheus Targets
+Open Prometheus UI:
+```sh
+http://192.168.56.100:9090/targets
+```
+- **Look for in the targets:**
+  - ✅ **argo-rollouts-metrics** 👉 `serviceMonitor/argo-rollout/argo-rollouts/0` (Endpoint: `http://<ENDPOINT-IP>:8090/metrics`)
+  - ✅ **canary-service** 👉 `serviceMonitor/argo-rollout/rollouts-metrics/0` (Endpoint: `http://<ENDPOINT-IP>:5000/metrics`)
+  - Both should be `UP`.
+
+- **Expected Outcome**
+  - **Prometheus will now scrape both:**
+       - **The rollout metrics service (`argo-rollouts-metrics`) at port `8090`.**
+       - **The Canary service (`canary-service`) at port `5000`.**
+       - Both will be secured using **Basic Authentication**.
+   
+ 
