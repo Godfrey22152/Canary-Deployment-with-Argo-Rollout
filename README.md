@@ -312,10 +312,10 @@ The workflow runs on a **[self-hosted runner](https://github.com/Godfrey22152/Ca
 
 ### Summary 🎯📢🔍
 This CI/CD workflow ensures that:
-✅ **Code quality checks** (Flake8, Pytest) prevent errors from being deployed.
-✅ **Security scans** (Trivy, Bandit, Docker Scout) enhance the application’s security.
-✅ **Automated Docker image builds and deployments** streamline releases.
-✅ **Canary and stable deployments** provide flexibility for gradual rollouts. 🚀📦📜
+- ✅ **Code quality checks** (Flake8, Pytest) prevent errors from being deployed.
+- ✅ **Security scans** (Trivy, Bandit, Docker Scout) enhance the application’s security.
+- ✅ **Automated Docker image builds and deployments** streamline releases.
+- ✅ **Canary and stable deployments** provide flexibility for gradual rollouts. 🚀📦📜
 
 This pipeline significantly reduces manual intervention and enhances deployment reliability for the **Canary Deployment project**. ✅🔄🛠️
 
@@ -349,7 +349,7 @@ kubectl argo rollouts get rollout rollouts-traffic-management -n argo-rollouts
 ```
  - **For Stable Release**
  ```sh
- Name:            rollouts-traffic-management
+Name:            rollouts-traffic-management
 Namespace:       argo-rollouts
 Status:          ✔ Healthy
 Strategy:        Canary
@@ -365,7 +365,7 @@ Replicas:
   Available:     5
 
 NAME                                                     KIND        STATUS     AGE    INFO
-⟳ rollouts-traffic-management                            Rollout     ✔ Healthy  4m
+⟳ rollouts-traffic-management                           Rollout     ✔ Healthy  4m
 └──# revision:1
    └──⧉ rollouts-traffic-management-56b8c46f7f          ReplicaSet  ✔ Healthy  3m57s  stable
       ├──□ rollouts-traffic-management-56b8c46f7f-84bfk  Pod         ✔ Running  3m52s  ready:1/1,restarts:1
@@ -394,7 +394,7 @@ Replicas:
   Available:     5
 
 NAME                                                     KIND         STATUS        AGE    INFO
-⟳ rollouts-traffic-management                            Rollout      ✔ Healthy     11m
+⟳ rollouts-traffic-management                           Rollout      ✔ Healthy     11m
 ├──# revision:2
 │  ├──⧉ rollouts-traffic-management-85f7b557d9          ReplicaSet   ✔ Healthy     6m10s  stable
 │  │  ├──□ rollouts-traffic-management-85f7b557d9-ggzvr  Pod          ✔ Running     6m10s  ready:1/1
@@ -486,7 +486,7 @@ Using this method, you can observe the behavior of **Canary** and **Stable** rel
  - **Example Output:** 
  ```sh
  NAME                                                             CLASS   HOSTS                        ADDRESS          PORTS   AGE
- argo-rollouts-dashboard                                          nginx   argorollouts.dashboard.com   192.168.56.101   80      1h
+ argo-rollouts-dashboard                                          nginx   argorollouts.dashboard.com   192.168.56.103   80      1h
  rollouts-traffic-management                                      nginx   quizapp.com                  192.168.56.101   80      1h
  rollouts-traffic-management-rollouts-traffic-management-canary   nginx   quizapp.com                  192.168.56.101   80      1h
  ```
