@@ -373,16 +373,17 @@ http://<EXTERNAL-IP>:9093
 
 #### 🛠 Troubleshooting (If EXTERNAL-IP Stays Pending)
 If your cluster is running in bare metal or a local environment, you may need **MetalLB** as a **LoadBalancer solution**.
-📌 Follow this detailed installation guide to **[Install MetalLB](https://github.com/Godfrey22152/Production-Ready-method-for-installing-DevOps-Tools/blob/main/installations/metallb.md)** and configure an IP address pool for MetalLB to assign external IPs.🚀
+
+- 📌 Follow this detailed installation guide to **[Install MetalLB](https://github.com/Godfrey22152/Production-Ready-method-for-installing-DevOps-Tools/blob/main/installations/metallb.md)** and configure an IP address pool for MetalLB to assign external IPs.🚀
 
 ---
 
 ## 📌 Why This Method is Best?
-✅ Version Control – You control installed versions, preventing unexpected updates.
-✅ Easy Rollback – helm rollback prometheus <REVISION> makes it easy to revert changes.
-✅ GitOps Ready – Store manifests in Git for traceability and automation.
-✅ Namespace Isolation – Keeps monitoring components organized.
-✅ Observability – Includes Prometheus, Grafana, Alertmanager, Node Exporter, ETC.
+- ✅ Version Control – You control installed versions, preventing unexpected updates.
+- ✅ Easy Rollback – helm rollback prometheus <REVISION> makes it easy to revert changes.
+- ✅ GitOps Ready – Store manifests in Git for traceability and automation.
+- ✅ Namespace Isolation – Keeps monitoring components organized.
+- ✅ Observability – Includes Prometheus, Grafana, Alertmanager, Node Exporter, ETC.
 
 ---
 
@@ -423,11 +424,20 @@ stable-service            ClusterIP   10.104.17.145    <none>        5000/TCP   
   ```
   **Expected Output:**
   ```sh
-  NAME               AGE
+  NAME                 AGE
   argo-rollouts        1h
   rollouts-metrics     1h
   ```
-
+  
+- **Inspect the `ServiceMonitor`:**
+  ```sh
+  kubectl get servicemonitor rollouts-metrics -n argo-rollouts -o yaml
+  
+  kubectl get servicemonitor argo-rollouts -n argo-rollouts -o yaml  
+  ```
+  
+---
+  
 ### ✅ Prometheus Targets
 Open Prometheus UI:
 ```sh
@@ -436,12 +446,108 @@ http://192.168.56.100:9090/targets
 - **Look for in the targets:**
   - ✅ **argo-rollouts-metrics** 👉 `serviceMonitor/argo-rollout/argo-rollouts/0` (Endpoint: `http://<ENDPOINT-IP>:8090/metrics`)
   - ✅ **canary-service** 👉 `serviceMonitor/argo-rollout/rollouts-metrics/0` (Endpoint: `http://<ENDPOINT-IP>:5000/metrics`)
-  - Both should be `UP`.
+  - ✅ Both should be `UP`.
 
 - **Expected Outcome**
   - **Prometheus will now scrape both:**
        - **The rollout metrics service (`argo-rollouts-metrics`) at port `8090`.**
        - **The Canary service (`canary-service`) at port `5000`.**
        - Both will be secured using **Basic Authentication**.
+
+---
+
+### Prometheus Images
+
+- **Prometheus Targets**
+  ![Prometheus Targets](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/tree/main/images/prometheus-targets.png)
+
+- **Prometheus Query Samples**
+  ![Prometheus Queries](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/Prometheus-argo-rollout-controller.png)
+  ![Prometheus Queries](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/prometheus-rollout-info.png)
+  ![Prometheus Queries](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/prometheus-rollout-phase.png)
+  ![Prometheus Queries](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/prometheus-query.png)
+  
+  
+---
+
+## Setting Up Grafana Dashboard for Argo Rollouts
+
+### 1️⃣ Configure Grafana DataSource
+
+Once Grafana is accessible via the UI, configure the Prometheus DataSource to fetch Argo Rollouts metrics.
+
+#### Steps:
+1. **Log in to Grafana:**
+   - Open `http://<EXTERNAL-IP>:3000`
+   - Default credentials: `admin / admin` (change after first login)
+
+2. **Add Prometheus as a DataSource:**
+   - Navigate to **"Configuration" → "Data Sources"**
+   - Click **"Add data source"**
+   - Select **Prometheus**
+   - Enter a Name for the data source, For Instance: `Canary-release-prometheus-Datasource` 
+   - Under **URL**, enter: `http://kube-prometheus-stack-prometheus.monitoring:9090` in my case: `http://192.168.56.100:9090`
+   - Click **"Save & Test"**
+
+### 2️⃣ Create the "Rollouts Dashboard" Folder
+Organizing dashboards in a specific folder helps maintain a structured view.
+
+### Steps:
+1. **Go to "Dashboards" → "Manage"**
+2. Click **"New Folder"**
+3. Name the folder **"Rollouts Dashboard"**
+4. Click **"Create"**
+
+### 3️⃣ Import Dashboards
+Import the required dashboards into Grafana to visualize Argo Rollouts metrics.
+
+### **Import the K8s-Argo-Rollout Dashboard**
+1. **Go to "Dashboards" → "New" → "Import"**
+2. In the "Import via Grafana ID" field, enter **`15386`**
+3. Click **"Load"**
+4. Select **"Prometheus"** or **as configured** as the data source
+5. Choose **"Rollouts Dashboard"** as the folder
+6. Click **"Import"**
+
+### **Import the Argo-Rollouts Dashboard**
+1. **Go to "Dashboards" → "New" → "Import"**
+2. Click **"Upload JSON file"**
+3. Upload the JSON file from:
+   ```
+   https://github.com/argoproj/argo-rollouts/blob/master/examples/dashboard.json
+   ```
+4. Select **"Prometheus"** or **as configured** as the data source
+5. Choose **"Rollouts Dashboard"** as the folder
+6. Click **"Import"**
+
+### 4️⃣ Dashboard Images
+ 
+ - **Grafana Data Source Configuration**
+   ![Grafana Data Source](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/grafana-datasource.png)
+
+ - **Rollouts Dashboard Folder**
+   ![Grafana Rollouts Dashboard Folder](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/grafana-rollouts-dashboard-folder.png)
    
+ - **K8s-Argo-Rollout Dashboards**
+   ![K8s-Argo-Rollout Dashboard](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/k8s-argo-rollout-dashboard.png)
+   ![K8s-Argo-Rollout Dashboard](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/grafana-4.png)
+   ![K8s-Argo-Rollout Dashboard](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/grafana-5.png)
+
+ - **Argo-Rollouts Dashboards**  
+   ![Argo-Rollouts Dashboard](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/grafana.png)
+   ![Argo-Rollouts Dashboard](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/argo-rollouts-dashboard.png)
+   ![Argo-Rollouts Dashboard](https://github.com/Godfrey22152/Canary-Deployment-with-Argo-Rollout/blob/main/images/grafana-3.png)
+   
+   
+### 🎯 Conclusion
+The Grafana dashboards are now fully set up to monitor and analyze **Argo Rollouts** in the Kubernetes cluster. 🎉
+
+🔹 **Next Steps to Tryout:**
+- Explore additional visualization tweaks.
+- Set up alerting for rollout failures.
+  
+
+
+
+
  
